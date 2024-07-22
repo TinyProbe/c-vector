@@ -9,6 +9,7 @@ static vector __vt_vectors[MAX_VECTORS_COUNT];
 static size_t __vt_vectors_count;
 static size_t __vt_stack[MAX_STACK_HEIGHT];
 static size_t __vt_stack_height;
+static int    __vt_is_registered_atexit;
 
 static size_t __vt_array_idx(vector self, size_t idx) {
   size_t l = 0, r = self->arrays_count;
@@ -73,9 +74,8 @@ void    __vt_scope_end(void) {
 }
 
 vector  __vt_new(size_t count, size_t type_size) {
-  static int is_registered_atexit;
-  if (!is_registered_atexit) {
-    is_registered_atexit = 1;
+  if (!__vt_is_registered_atexit) {
+    __vt_is_registered_atexit = 1;
     atexit(__vt_clean);
   }
   vector vt = (vector)calloc(1, sizeof(_vector));
