@@ -12,6 +12,9 @@ OBJ=\
 		src/vector.o\
 
 $(TARGET): $(INC) $(OBJ) Makefile
+	@if [ ! -f lib ]; then \
+		mkdir -p lib; \
+	fi
 	@ar -cvq $(TARGET) $(OBJ)
 
 %.o: %.c
