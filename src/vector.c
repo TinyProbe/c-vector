@@ -90,8 +90,8 @@ vector  __vt_new(size_t count, size_t type_size) {
 }
 
 void    __vt_delete(vector self) {
-  for (size_t i = 0; i < self->arrays_count; ++i) {
-    free(self->arrays[i]);
+  while (self->arrays_count) {
+    free(self->arrays[--self->arrays_count]);
   }
   free(self);
 }
