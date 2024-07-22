@@ -65,6 +65,7 @@ void    __vt_scope_begin(void) {
 }
 
 void    __vt_scope_end(void) {
+  assert(__vt_stack_height > 0);
   while (__vt_stack[__vt_stack_height]--) {
     __vt_delete(__vt_vectors[--__vt_vectors_count]);
   }
