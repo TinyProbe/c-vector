@@ -1,17 +1,13 @@
-//
-//  WARNING: Multidimensional vector not supported.
-//  TODO: Multidimensional vector support.
-//
 #ifndef VECTOR_VECTOR_H
 #define VECTOR_VECTOR_H
 
 #include <stddef.h>
 
-#define MAX_ALLOC_SIZE    16711568
-#define MAX_ARRAYS_COUNT  (1ul << 8)
-#define MAX_VECTOR_SIZE   -1u
+#define MAX_VECTOR_SIZE   (1ul << 30)
 #define MAX_VECTORS_COUNT (1ul << 20)
 #define MAX_STACK_HEIGHT  (1ul << 20)
+#define MAX_ARRAYS_COUNT  30ul
+#define MAX_ALLOC_SIZE    (1ul << (MAX_ARRAYS_COUNT - 1ul))
 #ifndef nullptr
 # define nullptr          (void *)0
 #endif
@@ -26,37 +22,45 @@
 //  VECTOR_MULTITHREAD must be defined.
 //
 #ifndef VECTOR_MULTITHREAD
-# define vt_in                  __vt_stack_in   // Use in single-threading.
-# define vt_out                 __vt_stack_out  // Use in single-threading.
+# define vt_in                    __vt_stack_in   // in single-threading.
+# define vt_out                   __vt_stack_out  // in single-threading.
 #else
-# define vt_delete(vt)          (__vt_delete(vt))  // Use in multi-threading.
+# define vt_delete(vt)            (__vt_delete(vt))  // in multi-threading.
 #endif
-#define vt_new(count, type)     (__vt_new(count, sizeof(type)))
-#define vt_count(vt)            (__vt_count(vt))
-#define vt_size(vt)             vt_count(vt)
-#define vt_length(vt)           vt_count(vt)
-#define vt_empty(vt)            (vt_count(vt) == 0)
-#define vt_type_size(vt)        (__vt_type_size(vt))
-#define vt_type_count(vt)       (__vt_type_count(vt))
-#define vt_capacity(vt)         (__vt_capacity(vt))
-#define vt_resize(vt, count)    (__vt_resize(vt, count))
-#define vt_clear(vt)            vt_resize(vt, 0)
-#define vt_add(vt, item)        (__vt_add(vt, &item)) // variable.
-#define vt_push(vt, item)       (__vt_push(vt, item)) // literal/pointer.
-#define vt_pop(vt)              (__vt_pop(vt))
-#define vt_at(vt, idx, type)    (*(type *)__vt_at(vt, idx)) // O(log(log(n))).
-#define vt_front(vt, type)      (*(type *)__vt_front(vt))
-#define vt_back(vt, type)       (*(type *)__vt_back(vt))
-#define vt_move(dst, src)       (__vt_move(&dst, &src))
-#define vt_copy(dst, src)       (__vt_copy(&dst, &src))
-#define vt_swap(dst, src)       (__vt_swap(&dst, &src))
-#define vt_reverse(vt)          (__vt_reverse(vt))
-#define vt_iterator(vt, idx)    (__vt_iterator(vt, idx))    // O(log(log(n))).
-#define vt_begin(vt)            (__vt_begin(vt))
-#define vt_end(vt)              (__vt_end(vt))
-#define vt_next(itr)            (__vt_itr_next(&itr))
-#define vt_prev(itr)            (__vt_itr_prev(&itr))
-#define vt_deref(itr, type)     (*(type *)__vt_itr_addr(&itr))
+#define vt_new(count, type)       (__vt_new(count, sizeof(type)))
+#define vt_count(vt)              (__vt_count(vt))
+#define vt_size(vt)               vt_count(vt)
+#define vt_len(vt)                vt_count(vt)
+#define vt_empty(vt)              (vt_count(vt) == 0)
+#define vt_type_size(vt)          (__vt_type_size(vt))
+#define vt_type_count(vt)         (__vt_type_count(vt))
+#define vt_capacity(vt)           (__vt_capacity(vt))
+#define vt_resize(vt, count)      (__vt_resize(vt, count))
+#define vt_clear(vt)              vt_resize(vt, 0)
+#define vt_add(vt, item)          (__vt_add(vt, &item)) // variable.
+#define vt_push(vt, item)         (__vt_push(vt, item)) // literal value.
+#define vt_pop(vt)                (__vt_pop(vt))
+#define vt_at(vt, idx, type)      (*(type *)__vt_at(vt, idx))
+#define vt_front(vt, type)        (*(type *)__vt_front(vt))
+#define vt_back(vt, type)         (*(type *)__vt_back(vt))
+#define vt_move(src)              (__vt_move(&src))
+#define vt_clone(src, depth)      (__vt_clone(src, depth))
+#define vt_swap(dst, src)         (__vt_swap(&dst, &src))
+#define vt_reverse(vt)            (__vt_reverse(vt))
+#define vt_itr(vt, idx)           (__vt_iterator(vt, idx))
+#define vt_begin(vt)              (__vt_begin(vt))
+#define vt_end(vt)                (__vt_end(vt))
+#define vt_next(itr)              (__vt_itr_next(&itr))
+#define vt_prev(itr)              (__vt_itr_prev(&itr))
+#define vt_ref(itr, type)         (*(type *)__vt_itr_addr(&itr))
+
+// // #define vt_clear(vt, depth)         (__vt_clear(vt, depth))
+// #define vt_add(vt, item)            (__vt_add(vt, &item)) // variable.
+// #define vt_push(vt, item)           (__vt_push(vt, item)) // literal.
+// // #define vt_pop(vt, depth)           (__vt_pop(vt, depth))
+// // #define vt_insert(vt, idx, item)    (__vt_insert(vt, idx, &item))  // variable.
+// // #define vt_input(vt, idx, item)     (__vt_input(vt, idx, item))    // literal.
+// // #define vt_erase(vt, idx, depth)    (__vt_erase(vt, idx, depth))
 
 typedef struct {
   void   *arrays[MAX_ARRAYS_COUNT];
@@ -78,21 +82,21 @@ typedef struct {
 void    __vt_stack_in(void);
 void    __vt_stack_out(void);
 #endif
-void    __vt_delete(vector self);               // !recursive.
+void    __vt_delete(vector self);
 vector  __vt_new(size_t count, size_t type_size);
 size_t  __vt_count(vector self);
 size_t  __vt_type_size(vector self);
 size_t  __vt_type_count(vector self);
 size_t  __vt_capacity(vector self);
-int     __vt_resize(vector self, size_t count); // !recursive: __vt_post_decre.
+int     __vt_resize(vector self, size_t count);
 int     __vt_add(vector self, void *item);
 int     __vt_push(vector self, ...);
-void    __vt_pop(vector self);                  // !recursive: __vt_post_decre.
+void    __vt_pop(vector self);
 void   *__vt_at(vector self, size_t idx);
 void   *__vt_front(vector self);
 void   *__vt_back(vector self);
-void    __vt_move(vector *dst, vector *src);
-void    __vt_copy(vector *dst, vector *src);    // !recursive.
+vector  __vt_move(vector *src);
+vector  __vt_clone(vector src, size_t depth);
 void    __vt_swap(vector *a, vector *b);
 void    __vt_reverse(vector self);
 vt_itr  __vt_iterator(vector self, size_t idx);

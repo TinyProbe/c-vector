@@ -36,11 +36,11 @@ void test2(void) {
   vector v = vt_new(1000, int);
 
   for (vt_itr i = vt_begin(v); i.idx < vt_size(v); vt_next(i)) {
-    vt_deref(i, int) = i.idx + 1;
+    vt_ref(i, int) = i.idx + 1;
   }
 
   for (vt_itr i = vt_begin(v); i.idx < vt_size(v); vt_next(i)) {
-    printf("%d ", vt_deref(i, int));
+    printf("%d ", vt_ref(i, int));
   }
   printf("\n");
 
@@ -61,9 +61,9 @@ void test3(void) {
   }
 
   for (vt_itr i = vt_begin(v); i.idx < vt_size(v); vt_next(i)) {
-    vector vv = vt_deref(i, vector);
+    vector vv = vt_ref(i, vector);
     for (vt_itr j = vt_begin(vv); j.idx < vt_size(vv); vt_next(j)) {
-      printf("%d ", vt_deref(j, int));
+      printf("%d ", vt_ref(j, int));
     }
     printf("\n");
   }
@@ -107,31 +107,55 @@ void test4(void) {
   vt_out();
 }
 
+typedef struct {
+  int a;
+  double b;
+  long long c;
+  char d[(1 << 8) + 13];
+} T1;
+
 void test5(void) {
   vt_in();
 
-  vector v = vt_new(100, int);
+  // vector v = vt_new(100000, long long);
+  // for (vt_itr i = vt_begin(v); i.idx < vt_size(v); vt_next(i)) {
+  //   vt_ref(i, long long) = ((i.idx * 44 + 11) * 88 + 33) % 100000;
+  // }
+  vector v = vt_new(100000, T1);
   for (vt_itr i = vt_begin(v); i.idx < vt_size(v); vt_next(i)) {
-    vt_deref(i, int) = i.idx + 1;
+    T1 *p = &vt_ref(i, T1);
+    p->a = ((i.idx * 55 + 33) * 99 + 77) % 55555;
+    p->b = i.idx * 1.5 + 11;
+    p->c = i.idx * 130985 + 4590;
+    for (int j = 0; j < (1<<8)+13; ++j) {
+      p->d[j] = i.idx % 10 + '0';
+    }
   }
 
   struct timeval t1, t2;
-  gettimeofday(&t1, (void *)0);
+  gettimeofday(&t1, nullptr);
 
   vt_reverse(v);
 
-  gettimeofday(&t2, (void *)0);
+  gettimeofday(&t2, nullptr);
   t2.tv_sec -= t1.tv_sec;
   t2.tv_usec -= t1.tv_usec;
   printf("%lds %ldus\n", t2.tv_sec, t2.tv_usec);
 
   // long long tot = 0;
-  for (vt_itr i = vt_begin(v); i.idx < vt_size(v); vt_next(i)) {
-    printf("%d ", vt_deref(i, int));
-    // tot += vt_deref(i, int);
-  }
-  printf("\n");
+  // for (vt_itr i = vt_begin(v); i.idx < vt_size(v); vt_next(i)) {
+  //   // printf("%d ", vt_ref(i, T1).a);
+  //   tot += vt_ref(i, long long);
+  // }
+  // // printf("\n");
   // printf("%lld\n", tot);
+  long long tot = 0;
+  for (vt_itr i = vt_begin(v); i.idx < vt_size(v); vt_next(i)) {
+    // printf("%d ", vt_ref(i, T1).a);
+    tot += vt_ref(i, T1).a;
+  }
+  // printf("\n");
+  printf("%lld\n", tot);
 
   vt_out();
 }
@@ -142,7 +166,7 @@ void test5(void) {
 //     vt_push(v, "hello world!"[i]);
 //   }
 //   for (vt_itr i = vt_begin(v); i.idx < vt_size(v); vt_next(i)) {
-//     printf("%c", vt_deref(i, char));
+//     printf("%c", vt_ref(i, char));
 //   }
 //   printf("\n");
 //   vt_delete(v);
@@ -155,11 +179,11 @@ void test7(void) {
 
   // Iterator (time take x4.*)
   // for (vt_itr i = vt_begin(v); i.idx < vt_size(v); vt_next(i)) {
-  //   vt_deref(i, int) = ((i.idx + 1) * 5 + 10) * 5 % 10000;
+  //   vt_ref(i, int) = ((i.idx + 1) * 5 + 10) * 5 % 10000;
   // }
   // long long tot = 0;
   // for (vt_itr i = vt_begin(v); i.idx < vt_size(v); vt_next(i)) {
-  //   tot += vt_deref(i, int);
+  //   tot += vt_ref(i, int);
   // }
 
   // Random access (time take x9.*)
@@ -194,27 +218,30 @@ void test8(void) {
 
   vector v = vt_new(6, char const *);
   for (vt_itr i = vt_begin(v); i.idx < vt_size(v); vt_next(i)) {
-    vt_deref(i, char const *) = "hello World!!!";
+    vt_ref(i, char const *) = "hello World!!!";
   }
   vector v2 = vt_new(6, char const *);
   for (vt_itr i = vt_begin(v2); i.idx < vt_size(v2); vt_next(i)) {
-    vt_deref(i, char const *) = "!!!world hello";
+    vt_ref(i, char const *) = "!!!world hello";
   }
+
   for (vt_itr i = vt_begin(v); i.idx < vt_size(v); vt_next(i)) {
-    printf("%s\n", vt_deref(i, char const *));
+    printf("%s\n", vt_ref(i, char const *));
   }
   printf("\n");
   for (vt_itr i = vt_begin(v2); i.idx < vt_size(v2); vt_next(i)) {
-    printf("%s\n", vt_deref(i, char const *));
+    printf("%s\n", vt_ref(i, char const *));
   }
   printf("\n");
+
   vt_swap(v, v2);
+
   for (vt_itr i = vt_begin(v); i.idx < vt_size(v); vt_next(i)) {
-    printf("%s\n", vt_deref(i, char const *));
+    printf("%s\n", vt_ref(i, char const *));
   }
   printf("\n");
   for (vt_itr i = vt_begin(v2); i.idx < vt_size(v2); vt_next(i)) {
-    printf("%s\n", vt_deref(i, char const *));
+    printf("%s\n", vt_ref(i, char const *));
   }
   printf("\n");
 
@@ -223,7 +250,7 @@ void test8(void) {
 
 typedef struct {
   int a;
-  float b;
+  double b;
   long long c;
 } Hello;
 
@@ -231,15 +258,53 @@ void test9(void) {
   vt_in();
 
   vector v = vt_new(10, Hello);
+  Hello a = { 3, 5.5, 99999999999 };
   for (int i = 0; i < 10; ++i) {
-    Hello a = { 3, 5.5, 99999999999 };
-    vt_itr itr = vt_iterator(v, i);
-    vt_deref(itr, Hello) = a;
+    vt_itr itr = vt_itr(v, i);
+    vt_ref(itr, Hello) = a;
+    a.a += a.a;
+    a.b += a.b;
   }
   for (int i = 0; i < 10; ++i) {
-    vt_itr itr = vt_iterator(v, i);
-    Hello *a = &vt_deref(itr, Hello);
+    vt_itr itr = vt_itr(v, i);
+    Hello *a = &vt_ref(itr, Hello);
     printf("%d, %f, %lld\n", a->a, a->b, a->c);
+  }
+
+  vt_out();
+}
+
+void test10(void) {
+  vt_in();
+
+  vector v = vt_new(10, vector);
+  Hello a = { 2, 1.47, 29 };
+  for (vt_itr i = vt_begin(v); i.idx < vt_len(v); vt_next(i)) {
+    vector vv = vt_ref(i, vector) = vt_new(10, Hello);
+    for (vt_itr j = vt_begin(vv); j.idx < vt_len(vv); vt_next(j)) {
+      vt_ref(j, Hello) = a;
+      a.a += a.a;
+      a.b += a.b;
+      a.c += a.c;
+    }
+  }
+  for (vt_itr i = vt_begin(v); i.idx < vt_len(v); vt_next(i)) {
+    vector vv = vt_ref(i, vector);
+    for (vt_itr j = vt_begin(vv); j.idx < vt_len(vv); vt_next(j)) {
+      Hello *b = &vt_ref(j, Hello);
+      printf("%d, %f, %lld\n", b->a, b->b, b->c);
+    }
+    printf("\n");
+  }
+
+  vector v2 = vt_clone(v, 2);
+  for (vt_itr i = vt_begin(v2); i.idx < vt_len(v2); vt_next(i)) {
+    vector vv = vt_ref(i, vector);
+    for (vt_itr j = vt_begin(vv); j.idx < vt_len(vv); vt_next(j)) {
+      Hello *b = &vt_ref(j, Hello);
+      printf("%d, %f, %lld\n", b->a, b->b, b->c);
+    }
+    printf("\n");
   }
 
   vt_out();
@@ -247,7 +312,7 @@ void test9(void) {
 
 int main(void) {
   // struct timeval t1, t2;
-  // gettimeofday(&t1, (void *)0);
+  // gettimeofday(&t1, nullptr);
 
   // test1();
   // test2();
@@ -258,9 +323,10 @@ int main(void) {
   // test7();
   // test7_1();
   // test8();
-  test9();
+  // test9();
+  // test10();
 
-  // gettimeofday(&t2, (void *)0);
+  // gettimeofday(&t2, nullptr);
   // t2.tv_sec -= t1.tv_sec;
   // t2.tv_usec -= t1.tv_usec;
   // printf("%lds %ldus\n", t2.tv_sec, t2.tv_usec);
