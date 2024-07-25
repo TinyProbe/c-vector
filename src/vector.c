@@ -13,103 +13,98 @@ static size_t __vt_stack_height;
 static int    __vt_is_registered_atexit;
 #endif
 
-static size_t __vt_memswap_64(void *a, void *b, size_t size) {
-  size_t n = size / (sizeof(long long) * 8);
-  size -= n * (sizeof(long long) * 8);
+static void   __vt_memswap_64(void **a, void **b, size_t *size) {
+  size_t n = *size / (sizeof(long long) * 8);
+  *size -= n * (sizeof(long long) * 8);
+  long long c[8];
   while (n--) {
-    __swap(((long long *)a)[0], ((long long *)b)[0]);
-    __swap(((long long *)a)[1], ((long long *)b)[1]);
-    __swap(((long long *)a)[2], ((long long *)b)[2]);
-    __swap(((long long *)a)[3], ((long long *)b)[3]);
-    __swap(((long long *)a)[4], ((long long *)b)[4]);
-    __swap(((long long *)a)[5], ((long long *)b)[5]);
-    __swap(((long long *)a)[6], ((long long *)b)[6]);
-    __swap(((long long *)a)[7], ((long long *)b)[7]);
-    a += sizeof(long long) * 8;
-    b += sizeof(long long) * 8;
+    memcpy(c, *a, sizeof(long long) * 8);
+    memcpy(*a, *b, sizeof(long long) * 8);
+    memcpy(*b, c, sizeof(long long) * 8);
+    *a += sizeof(long long) * 8;
+    *b += sizeof(long long) * 8;
   }
-  return size;
 }
-static size_t __vt_memswap_32(void *a, void *b, size_t size) {
-  size_t n = size / (sizeof(long long) * 4);
-  size -= n * (sizeof(long long) * 4);
+static void   __vt_memswap_32(void **a, void **b, size_t *size) {
+  size_t n = *size / (sizeof(long long) * 4);
+  *size -= n * (sizeof(long long) * 4);
+  long long c[4];
   while (n--) {
-    __swap(((long long *)a)[0], ((long long *)b)[0]);
-    __swap(((long long *)a)[1], ((long long *)b)[1]);
-    __swap(((long long *)a)[2], ((long long *)b)[2]);
-    __swap(((long long *)a)[3], ((long long *)b)[3]);
-    a += sizeof(long long) * 4;
-    b += sizeof(long long) * 4;
+    memcpy(c, *a, sizeof(long long) * 4);
+    memcpy(*a, *b, sizeof(long long) * 4);
+    memcpy(*b, c, sizeof(long long) * 4);
+    *a += sizeof(long long) * 4;
+    *b += sizeof(long long) * 4;
   }
-  return size;
 }
-static size_t __vt_memswap_16(void *a, void *b, size_t size) {
-  size_t n = size / (sizeof(long long) * 2);
-  size -= n * (sizeof(long long) * 2);
+static void   __vt_memswap_16(void **a, void **b, size_t *size) {
+  size_t n = *size / (sizeof(long long) * 2);
+  *size -= n * (sizeof(long long) * 2);
+  long long c[2];
   while (n--) {
-    __swap(((long long *)a)[0], ((long long *)b)[0]);
-    __swap(((long long *)a)[1], ((long long *)b)[1]);
-    a += sizeof(long long) * 2;
-    b += sizeof(long long) * 2;
+    memcpy(c, *a, sizeof(long long) * 2);
+    memcpy(*a, *b, sizeof(long long) * 2);
+    memcpy(*b, c, sizeof(long long) * 2);
+    *a += sizeof(long long) * 2;
+    *b += sizeof(long long) * 2;
   }
-  return size;
 }
-static size_t __vt_memswap_8(void *a, void *b, size_t size) {
-  size_t n = size / sizeof(long long);
-  size -= n * sizeof(long long);
+static void   __vt_memswap_8(void **a, void **b, size_t *size) {
+  size_t n = *size / sizeof(long long);
+  *size -= n * sizeof(long long);
+  long long c;
   while (n--) {
-    __swap(*(long long *)a, *(long long *)b);
-    a += sizeof(long long);
-    b += sizeof(long long);
+    c = *(long long *)*a;
+    *(long long *)*a = *(long long *)*b;
+    *(long long *)*b = c;
+    *a += sizeof(long long);
+    *b += sizeof(long long);
   }
-  return size;
 }
-static size_t __vt_memswap_4(void *a, void *b, size_t size) {
-  size_t n = size / sizeof(int);
-  size -= n * sizeof(int);
+static void   __vt_memswap_4(void **a, void **b, size_t *size) {
+  size_t n = *size / sizeof(int);
+  *size -= n * sizeof(int);
+  int c;
   while (n--) {
-    __swap(*(int *)a, *(int *)b);
-    a += sizeof(int);
-    b += sizeof(int);
+    c = *(int *)*a;
+    *(int *)*a = *(int *)*b;
+    *(int *)*b = c;
+    *a += sizeof(int);
+    *b += sizeof(int);
   }
-  return size;
 }
-static size_t __vt_memswap_2(void *a, void *b, size_t size) {
-  size_t n = size / sizeof(short);
-  size -= n * sizeof(short);
+static void   __vt_memswap_2(void **a, void **b, size_t *size) {
+  size_t n = *size / sizeof(short);
+  *size -= n * sizeof(short);
+  short c;
   while (n--) {
-    __swap(*(short *)a, *(short *)b);
-    a += sizeof(short);
-    b += sizeof(short);
+    c = *(short *)*a;
+    *(short *)*a = *(short *)*b;
+    *(short *)*b = c;
+    *a += sizeof(short);
+    *b += sizeof(short);
   }
-  return size;
 }
-static size_t __vt_memswap_1(void *a, void *b, size_t size) {
-  size_t n = size / sizeof(char);
-  size -= n * sizeof(char);
+static void   __vt_memswap_1(void **a, void **b, size_t *size) {
+  size_t n = *size / sizeof(char);
+  *size -= n * sizeof(char);
+  char c;
   while (n--) {
-    __swap(*(char *)a, *(char *)b);
-    a += sizeof(char);
-    b += sizeof(char);
+    c = *(char *)*a;
+    *(char *)*a = *(char *)*b;
+    *(char *)*b = c;
+    *a += sizeof(char);
+    *b += sizeof(char);
   }
-  return size;
 }
-
 static void   __vt_memswap(void *a, void *b, size_t size) {
-  if (size >= (1 << 6))
-    size = __vt_memswap_64(a, b, size);
-  if (size >= (1 << 5))
-    size = __vt_memswap_32(a, b, size);
-  if (size >= (1 << 4))
-    size = __vt_memswap_16(a, b, size);
-  if (size >= (1 << 3))
-    size = __vt_memswap_8(a, b, size);
-  if (size >= (1 << 2))
-    size = __vt_memswap_4(a, b, size);
-  if (size >= (1 << 1))
-    size = __vt_memswap_2(a, b, size);
-  if (size >= (1 << 0))
-    size = __vt_memswap_1(a, b, size);
+  if (size >= (1 << 6)) __vt_memswap_64(&a, &b, &size);
+  if (size >= (1 << 5)) __vt_memswap_32(&a, &b, &size);
+  if (size >= (1 << 4)) __vt_memswap_16(&a, &b, &size);
+  if (size >= (1 << 3)) __vt_memswap_8(&a, &b, &size);
+  if (size >= (1 << 2)) __vt_memswap_4(&a, &b, &size);
+  if (size >= (1 << 1)) __vt_memswap_2(&a, &b, &size);
+  if (size >= (1 << 0)) __vt_memswap_1(&a, &b, &size);
 }
 
 static vt_itr __vt_make_iter(
@@ -119,16 +114,10 @@ static vt_itr __vt_make_iter(
 }
 
 static size_t __vt_arrays_idx(vector self, size_t idx) {
-  size_t l = 0, r = self->arrays_count;
-  while (l + 1 < r) {
-    size_t m = (l + r) / 2;
-    if (idx < self->arrays_counts[m]) {
-      r = m;
-    } else {
-      l = m;
-    }
-  }
-  return idx < self->arrays_counts[l] ? l : r;
+  size_t arrays_idx = self->arrays_count / 2;
+  while (idx >= self->arrays_counts[arrays_idx]) { ++arrays_idx; }
+  while (idx + 1 < self->arrays_counts[arrays_idx]) { --arrays_idx; }
+  return arrays_idx + (idx >= self->arrays_counts[arrays_idx] ? 1 : 0);
 }
 
 static size_t __vt_back_arrays_idx(vector self) {

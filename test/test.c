@@ -53,8 +53,7 @@ void test3(void) {
   vector v = vt_new(10, vector);
 
   for (int i = 0; i < (int)vt_size(v); ++i) {
-    vector vv = vt_new(10, int);
-    vt_at(v, i, vector) = vv;
+    vector vv = vt_at(v, i, vector) = vt_new(10, int);
     for (int j = 0; j < (int)vt_size(vv); ++j) {
       vt_at(vv, j, int) = i * 10 + j;
     }
@@ -177,23 +176,23 @@ void test7(void) {
 
   vector v = vt_new(100000, int);
 
-  // Iterator (time take x4.*)
-  // for (vt_itr i = vt_begin(v); i.idx < vt_size(v); vt_next(i)) {
-  //   vt_ref(i, int) = ((i.idx + 1) * 5 + 10) * 5 % 10000;
-  // }
-  // long long tot = 0;
-  // for (vt_itr i = vt_begin(v); i.idx < vt_size(v); vt_next(i)) {
-  //   tot += vt_ref(i, int);
-  // }
-
-  // Random access (time take x9.*)
-  for (size_t i = 0; i < vt_size(v); ++i) {
-    vt_at(v, i, int) = ((i + 1) * 5 + 10) * 5 % 10000;
+  // Iterator (time take x3.*)
+  for (vt_itr i = vt_begin(v); i.idx < vt_size(v); vt_next(i)) {
+    vt_ref(i, int) = ((i.idx + 1) * 5 + 10) * 5 % 10000;
   }
   long long tot = 0;
-  for (size_t i = 0; i < vt_size(v); ++i) {
-    tot += vt_at(v, i, int);
+  for (vt_itr i = vt_begin(v); i.idx < vt_size(v); vt_next(i)) {
+    tot += vt_ref(i, int);
   }
+
+  // Random access (time take x4.*)
+  // for (size_t i = 0; i < vt_size(v); ++i) {
+  //   vt_at(v, i, int) = ((i + 1) * 5 + 10) * 5 % 10000;
+  // }
+  // long long tot = 0;
+  // for (size_t i = 0; i < vt_size(v); ++i) {
+  //   tot += vt_at(v, i, int);
+  // }
 
   printf("%lld\n", tot);
 
