@@ -5,7 +5,6 @@
 
 #define __MAX_VECTORS_COUNT     (1ull << 20)
 #define __MAX_STACK_HEIGHT      (1ull << 20)
-#define __MAX_ARRAYS_COUNT      (1ull << 5)
 #define __MAX_VECTOR_DIMENSION  (1ull << 5)
 
 #define __nullptr   (void *)0
@@ -51,17 +50,15 @@
 #define vt_ref(itr, type)         (*(type *)__vt_itr_addr(&itr))
 
 typedef struct {
-  void   *arrays[__MAX_ARRAYS_COUNT];
-  size_t  arrays_count;
+  void   *array;
   size_t  type_size;
+  size_t  type_count;
   size_t  count;
   size_t  __dimension;
-} *vector, _vector;
+} *vector, __vector;
 
 typedef struct {
   vector  __self;
-  size_t  __arrays_idx;
-  size_t  __array_idx;
   size_t  idx;
 } vt_itr;
 

@@ -86,17 +86,16 @@ static void   __vt_memswap(void *a, void *b, size_t size) {                     
   if (size >= (1ull << 0)) __vt_memswap_1(&a, &b, &size);
 }
 
-static vt_itr __vt_make_iter(                                                   // finish
-    vector self, size_t arrays_idx, size_t array_idx, size_t idx) {
-  vt_itr itr = { self, arrays_idx, array_idx, idx };
+static vt_itr __vt_make_iter(vector self, size_t idx) {                         // finish
+  vt_itr itr = { self, idx };
   return itr;
 }
 
-static size_t __vt_arrays_counts(size_t idx) {
-  return (1ull << (idx + 1)) - 1;
-}
+// static size_t __vt_arrays_counts(size_t idx) {                                  // edit
+//   return (1ull << (idx + 1)) - 1;
+// }
 
-static size_t __vt_arrays_idx(size_t idx) {                                     // finish
+static size_t __vt_maximum_bit(size_t idx) {                                    // edit
   size_t arrays_idx = 0;
   ++idx;
   if (idx >> 16) { arrays_idx += 16; }
@@ -107,40 +106,45 @@ static size_t __vt_arrays_idx(size_t idx) {                                     
   return arrays_idx;
 }
 
-static size_t __vt_back_arrays_idx(vector self) {                               // finish
-  if (self->arrays_count >= 2) {
-    return self->count > __vt_arrays_counts(self->arrays_count - 2)
-        ? self->arrays_count - 1
-        : self->arrays_count - 2;
-  }
-  return 0;
-}
+// static size_t __vt_back_arrays_idx(vector self) {                               // edit
+//   if (self->arrays_count >= 2) {
+//     return self->count > __vt_arrays_counts(self->arrays_count - 2)
+//         ? self->arrays_count - 1
+//         : self->arrays_count - 2;
+//   }
+//   return 0;
+// }
 
-static size_t __vt_prev_count(size_t arrays_idx) {                              // finish
-  return arrays_idx ? __vt_arrays_counts(arrays_idx - 1) : 0;
-}
+// static size_t __vt_prev_count(size_t arrays_idx) {                              // edit
+//   return arrays_idx ? __vt_arrays_counts(arrays_idx - 1) : 0;
+// }
 
-static void  *__vt_idx_addr(vector self, size_t arrays_idx, size_t idx) {       // finish
-  return self->arrays[arrays_idx] +
-      (idx - __vt_prev_count(arrays_idx)) * self->type_size;
-}
+// static void  *__vt_idx_addr(vector self, size_t arrays_idx, size_t idx) {       // edit
+//   return self->arrays[arrays_idx] +
+//       (idx - __vt_prev_count(arrays_idx)) * self->type_size;
+// }
 
 static void   __vt_post_incre(vector self) {                                    // finish
-  while (self->count > __vt_type_count(self)) {
-    size_t alloc_count = 1ull << self->arrays_count;
-    self->arrays[self->arrays_count] = calloc(alloc_count, self->type_size);
-    assert(self->arrays[self->arrays_count] != __nullptr);
-    ++self->arrays_count;
+  if (self->count > self->type_count) {
+    size_t alloc_count = 1ull << (__vt_maximum_bit(self->count) + 1);
+    void *new = calloc(alloc_count, self->type_size);
+    assert(new != __nullptr);
+    memcpy(new, self->array, self->type_count * self->type_size);
+    free(self->array);
+    self->array = new;
+    self->type_count = alloc_count;
   }
 }
 
 static void   __vt_post_decre(vector self) {                                    // finish
-  while (self->arrays_count >= 3) {
-    if (self->count <= __vt_arrays_counts(self->arrays_count - 3)) {
-      free(self->arrays[--self->arrays_count]);
-    } else {
-      break;
-    }
+  if (self->count < self->type_count >> 1) {
+    size_t alloc_count = 1ull << (__vt_maximum_bit(self->count) + 1);
+    void *new = calloc(alloc_count, self->type_size);
+    assert(new != __nullptr);
+    memcpy(new, self->array, self->type_count * self->type_size);
+    free(self->array);
+    self->array = new;
+    self->type_count = alloc_count;
   }
 }
 
@@ -171,18 +175,18 @@ void    __vt_delete(vector self, int recurse) {                                 
       __vt_delete(vt_ref(i, vector), recurse);
     }
   }
-  while (self->arrays_count) {
-    free(self->arrays[--self->arrays_count]);
+  if (self->type_count) {
+    free(self->array);
   }
   free(self);
 }
 
 static vector __vt_new_recurse(
     size_t type_size, size_t dimension, size_t *counts) {                       // finish
-  vector vt = (vector)calloc(1, sizeof(_vector));
+  vector vt = (vector)calloc(1, sizeof(__vector));
   assert(vt != __nullptr);
   vt->__dimension = dimension--;
-  vt->type_size = dimension ? sizeof(_vector) : type_size;
+  vt->type_size = dimension ? sizeof(__vector) : type_size;
   __vt_resize(vt, counts[dimension]);
   if (dimension) {
     for (vt_itr i = __vt_begin(vt); i.idx < vt->count;
@@ -224,11 +228,11 @@ size_t  __vt_type_size(vector self) {                                           
 }
 
 size_t  __vt_type_count(vector self) {                                          // finish
-  return self->arrays_count ? __vt_arrays_counts(self->arrays_count - 1) : 0;
+  return self->type_count;
 }
 
 size_t  __vt_capacity(vector self) {                                            // finish
-  return self->type_size * __vt_type_count(self);
+  return self->type_size * self->type_count;
 }
 
 void    __vt_resize(vector self, size_t count) {                                // finish
@@ -248,10 +252,9 @@ void    __vt_clear(vector self) {                                               
       __vt_clear(vt_ref(i, vector));
     }
   }
+  free(self->array);
+  self->type_count = 0;
   self->count = 0;
-  while (self->arrays_count) {
-    free(self->arrays[--self->arrays_count]);
-  }
 }
 
 void    __vt_add(vector self, void *item) {                                     // finish
@@ -279,17 +282,17 @@ void    __vt_pop(vector self) {                                                 
 
 void   *__vt_at(vector self, size_t idx) {                                      // finish
   assert(idx < self->count);
-  return __vt_idx_addr(self, __vt_arrays_idx(idx), idx);
+  return self->array + idx * self->type_size;
 }
 
 void   *__vt_front(vector self) {                                               // finish
   assert(self->count > 0);
-  return self->arrays[0];
+  return self->array;
 }
 
 void   *__vt_back(vector self) {                                                // finish
   assert(self->count > 0);
-  return __vt_idx_addr(self, __vt_back_arrays_idx(self), self->count - 1);
+  return self->array + (self->count - 1) * self->type_size;
 }
 
 vector  __vt_move(vector *src) {                                                // finish
@@ -300,19 +303,15 @@ vector  __vt_move(vector *src) {                                                
 
 vector  __vt_clone(vector src) {                                                // finish
   vector vt = __vt_new(0, 1, 0);
-  memcpy(vt, src, sizeof(_vector));
-  for (size_t i = 0; i < vt->arrays_count; ++i) {
-    size_t capacity = __vt_arrays_counts(i) * vt->type_size;
-    vt->arrays[i] = malloc(capacity);
-    assert(vt->arrays[i] != __nullptr);
-    if (vt->__dimension == 1) {
-      memcpy(vt->arrays[i], src->arrays[i], capacity);
-    }
+  memcpy(vt, src, sizeof(__vector));
+  vt->array = malloc(src->type_count * src->type_size);
+  assert(vt->array != __nullptr);
+  if (vt->__dimension == 1) {
+    memcpy(vt->array, src->array, vt->count * vt->type_size);
   }
   if (vt->__dimension > 1) {
-    for (vt_itr i = __vt_begin(vt), j = __vt_begin(src); i.idx < vt->count;
-        __vt_itr_next(&i), __vt_itr_next(&j)) {
-      vt_ref(i, vector) = __vt_clone(vt_ref(j, vector));
+    for (size_t i = 0; i < vt->count; ++i) {
+      vt_at(vt, i, vector) = __vt_clone(vt_at(src, i, vector));
     }
   }
   return vt;
@@ -324,51 +323,35 @@ void    __vt_swap(vector *a, vector *b) {                                       
 
 void    __vt_reverse(vector self) {                                             // finish
   if (self->count < 2) { return; }
-  vt_itr l = __vt_begin(self), r = __vt_end(self);
-  __vt_itr_prev(&r);
-  while (l.idx < r.idx) {
-    __vt_memswap(__vt_itr_addr(&l), __vt_itr_addr(&r), self->type_size);
-    __vt_itr_next(&l);
-    __vt_itr_prev(&r);
+  size_t l = 0, r = self->count - 1;
+  while (l < r) {
+    __vt_memswap(
+        __vt_at(self, l++), __vt_at(self, r--), self->type_size);
   }
 }
 
 vt_itr  __vt_iterator(vector self, size_t idx) {                                // finish
-  size_t arrays_idx = __vt_arrays_idx(idx);
-  return __vt_make_iter(self, arrays_idx,
-                        idx - __vt_prev_count(arrays_idx),
-                        idx);
+  return __vt_make_iter(self, idx);
 }
 
 vt_itr  __vt_begin(vector self) {                                               // finish
-  return __vt_make_iter(self, 0ul, 0ul, 0ul);
+  return __vt_make_iter(self, 0ul);
 }
 
 vt_itr  __vt_end(vector self) {                                                 // finish
-  size_t arrays_idx = __vt_back_arrays_idx(self);
-  return __vt_make_iter(self, arrays_idx,
-                        self->count - __vt_prev_count(arrays_idx),
-                        self->count);
+  return __vt_make_iter(self, self->count);
 }
 
 void    __vt_itr_next(vt_itr *itr) {                                            // finish
   assert(itr->idx < itr->__self->count);
   ++itr->idx;
-  if (++itr->__array_idx == (1ull << itr->__arrays_idx)) {
-    ++itr->__arrays_idx;
-    itr->__array_idx = 0;
-  }
 }
 
 void    __vt_itr_prev(vt_itr *itr) {                                            // finish
   assert(itr->idx > 0);
   --itr->idx;
-  if (itr->__array_idx-- == 0) {
-    itr->__array_idx = (1ull << --itr->__arrays_idx) - 1;
-  }
 }
 
 void   *__vt_itr_addr(vt_itr *itr) {                                            // finish
-  vector self = itr->__self;
-  return self->arrays[itr->__arrays_idx] + itr->__array_idx * self->type_size;
+  return __vt_at(itr->__self, itr->idx);
 }
