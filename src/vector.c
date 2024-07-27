@@ -324,7 +324,7 @@ void    __vt_reverse(vector self) {                                             
   }
 }
 
-vt_itr  __vt_make_itr(vector self, size_t idx) {                               // finish
+vt_itr  __vt_make_itr(vector self, size_t idx) {                                // finish
   vt_itr itr = { self, idx };
   return itr;
 }
