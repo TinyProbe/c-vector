@@ -119,20 +119,20 @@ typedef struct {
 void test5(void) {
   vt_in();
 
-  // vector v = vt_new(long long, 1, 100000);
-  // for (vt_itr i = vt_begin(v); i.idx < vt_size(v); vt_next(i)) {
-  //   vt_ref(i, long long) = ((i.idx * 44 + 11) * 88 + 33) % 100000;
-  // }
-  vector v = vt_new(T1, 1, 100000);
+  vector v = vt_new(long long, 1, 100000);
   for (vt_itr i = vt_begin(v); i.idx < vt_size(v); vt_next(i)) {
-    T1 *p = &vt_ref(i, T1);
-    p->a = ((i.idx * 55 + 33) * 99 + 77) % 55555;
-    p->b = i.idx * 1.5 + 11;
-    p->c = i.idx * 130985 + 4590;
-    for (int j = 0; j < (1<<8)+13; ++j) {
-      p->d[j] = i.idx % 10 + '0';
-    }
+    vt_ref(i, long long) = ((i.idx * 44 + 11) * 88 + 33) % 100000;
   }
+  // vector v = vt_new(T1, 1, 100000);
+  // for (vt_itr i = vt_begin(v); i.idx < vt_size(v); vt_next(i)) {
+  //   T1 *p = &vt_ref(i, T1);
+  //   p->a = ((i.idx * 55 + 33) * 99 + 77) % 55555;
+  //   p->b = i.idx * 1.5 + 11;
+  //   p->c = i.idx * 130985 + 4590;
+  //   for (int j = 0; j < (1<<8)+13; ++j) {
+  //     p->d[j] = i.idx % 10 + '0';
+  //   }
+  // }
 
   struct timeval t1, t2;
   gettimeofday(&t1, __nullptr);
@@ -144,20 +144,20 @@ void test5(void) {
   t2.tv_usec -= t1.tv_usec;
   printf("%lds %ldus\n", t2.tv_sec, t2.tv_usec);
 
-  // long long tot = 0;
-  // for (vt_itr i = vt_begin(v); i.idx < vt_size(v); vt_next(i)) {
-  //   // printf("%d ", vt_ref(i, T1).a);
-  //   tot += vt_ref(i, long long);
-  // }
-  // // printf("\n");
-  // printf("%lld\n", tot);
   long long tot = 0;
   for (vt_itr i = vt_begin(v); i.idx < vt_size(v); vt_next(i)) {
     // printf("%d ", vt_ref(i, T1).a);
-    tot += vt_ref(i, T1).a;
+    tot += vt_ref(i, long long);
   }
   // printf("\n");
   printf("%lld\n", tot);
+  // long long tot = 0;
+  // for (vt_itr i = vt_begin(v); i.idx < vt_size(v); vt_next(i)) {
+  //   // printf("%d ", vt_ref(i, T1).a);
+  //   tot += vt_ref(i, T1).a;
+  // }
+  // // printf("\n");
+  // printf("%lld\n", tot);
 
   vt_out();
 }
@@ -180,16 +180,16 @@ void test7(void) {
   vector v = vt_new(int, 1, 1000000);
 
   // Iterator (time take x1.*)
-  // long long tot = 0;
-  // for (vt_itr i = vt_begin(v); i.idx < vt_len(v); vt_next(i)) {
-  //   tot += vt_ref(i, int) = ((i.idx + 1) * 5 + 10) * 5 % 10000;
-  // }
+  long long tot = 0;
+  for (vt_itr i = vt_begin(v); i.idx < vt_len(v); vt_next(i)) {
+    tot += vt_ref(i, int) = ((i.idx + 1) * 5 + 10) * 5 % 10000;
+  }
 
   // Random access (same as array)
-  long long tot = 0;
-  for (size_t i = 0; i < vt_size(v); ++i) {
-    tot += vt_at(v, i, int) = ((i + 1) * 5 + 10) * 5 % 10000;
-  }
+  // long long tot = 0;
+  // for (size_t i = 0; i < vt_size(v); ++i) {
+  //   tot += vt_at(v, i, int) = ((i + 1) * 5 + 10) * 5 % 10000;
+  // }
 
   printf("%lld\n", tot);
 
@@ -307,26 +307,26 @@ void test10(void) {
 void test11(void) {
   vt_in();
 
-  // vector v = vt_new(int, 1, 0);
-  // for (int i = 0; i < 1000000; ++i) {
-  //   vt_push(v, ((i + 1) * 5 + 17) * 3);
-  // }
-  // long long tot = 0;
-  // while (vt_len(v)) {
-  //   tot += vt_back(v, int);
-  //   vt_pop(v);
-  // }
-  // printf("%lld\n", tot);
-
-  int a[1000000];
+  vector v = vt_new(int, 1, 0);
   for (int i = 0; i < 1000000; ++i) {
-    a[i] = ((i + 1) * 5 + 17) * 3;
+    vt_push(v, ((i + 1) * 5 + 17) * 3);
   }
   long long tot = 0;
-  for (int i = 1000000; i--; ) {
-    tot += a[i];
+  while (vt_len(v)) {
+    tot += vt_back(v, int);
+    vt_pop(v);
   }
   printf("%lld\n", tot);
+
+  // int a[1000000];
+  // for (int i = 0; i < 1000000; ++i) {
+  //   a[i] = ((i + 1) * 5 + 17) * 3;
+  // }
+  // long long tot = 0;
+  // for (int i = 1000000; i--; ) {
+  //   tot += a[i];
+  // }
+  // printf("%lld\n", tot);
 
   vt_out();
 }
@@ -336,15 +336,21 @@ void test12(void) {
 
   long long tot = 0;
 
-  vector v = vt_new(int, 1, 300000);
+  vector v = vt_new(int, 1, 500000);
   for (vt_itr i = vt_begin(v); i.idx < vt_len(v); vt_next(i)) {
-    tot += vt_ref(i, int) = (((i.idx + 1) * 5 + 17) * 33 + 123) * 33 % 5000;
+    tot += vt_ref(i, int) = ((i.idx + 19) * 71 + 13) * 9;
   }
 
-  // int a[300000];
-  // for (int i = 0; i < 300000; ++i) {
-  //   tot += a[i] = (((i + 1) * 5 + 17) * 33 + 123) * 33 % 5000;
+  // vector v = vt_new(int, 1, 500000);
+  // for (size_t i = 0; i < vt_len(v); ++i) {
+  //   tot += vt_at(v, i, int) = i;
   // }
+
+  // int a[500000];
+  // for (int i = 0; i < 500000; ++i) {
+  //   tot += a[i] = i;
+  // }
+  // printf("%d\n", a[99993]);
 
   printf("%lld\n", tot);
 
@@ -358,10 +364,47 @@ void test13(void) {
   // for (int i = 0; i < 1000000; ++i) {
   //   vt_push(v, ((i + 1) * 5 + 13) * 15);
   // }
+  // vector v = vt_new(int, 1, 1000000);
+  // for (size_t i = 0; i < vt_len(v); ++i) {
+  //   vt_at(v, i, int) = ((i + 1) * 5 + 13) * 15;
+  // }
+
+  // long long tot = 0;
+  // for (size_t i = 0; i < vt_len(v); ++i) {
+  //   tot += vt_at(v, i, int);
+  // }
+  // printf("%lld\n", tot);
+
+  size_t const SIZE = 1000000;
+  int a[SIZE];
+  for (int i = 0; i < (int)SIZE; ++i) {
+    a[i] = ((i + 1) * 5 + 13) * 15;
+  }
+
+  long long tot = 0;
+  for (int i = 0; i < (int)SIZE; ++i) {
+    tot += a[i];
+  }
+  printf("%lld\n", tot);
+
+  vt_out();
+}
+
+void test14(void) {
+  vt_in();
+
   vector v = vt_new(int, 1, 0);
-  vt_resize(v, 1000000);
-  for (size_t i = 0; i < vt_len(v); ++i) {
-    vt_at(v, i, int) = ((i + 1) * 5 + 13) * 15;
+  for (int i = 0; i < 100000; ++i) {
+    vt_push(v, ((i + 1) * 5 + 13) * 15);
+  }
+  for (int i = 0; i < 50000; ++i) {
+    vt_pop(v);
+  }
+  for (int i = 0; i < 30000; ++i) {
+    vt_push(v, ((i + 1) * 5 + 13) * 15);
+  }
+  for (int i = 0; i < 40000; ++i) {
+    vt_pop(v);
   }
 
   long long tot = 0;
@@ -369,18 +412,6 @@ void test13(void) {
     tot += vt_at(v, i, int);
   }
   printf("%lld\n", tot);
-
-  // size_t const SIZE = 1000000;
-  // int a[SIZE];
-  // for (int i = 0; i < (int)SIZE; ++i) {
-  //   a[i] = ((i + 1) * 5 + 13) * 15;
-  // }
-
-  // long long tot = 0;
-  // for (int i = 0; i < (int)SIZE; ++i) {
-  //   tot += a[i];
-  // }
-  // printf("%lld\n", tot);
 
   vt_out();
 }
@@ -400,9 +431,10 @@ int main(void) {
   // test8();
   // test9();
   // test10();
-  test11();
+  // test11();
   // test12();
   // test13();
+  // test14();
 
   gettimeofday(&t2, __nullptr);
   t2.tv_sec -= t1.tv_sec;
