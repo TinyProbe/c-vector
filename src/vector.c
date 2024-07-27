@@ -224,7 +224,7 @@ void    __vt_add(vector self, void *item) {                                     
   if (self->__count >= self->__type_count) {
     __vt_pre_incre(self, self->__count + 1);
   }
-  memcpy(self->__array + (self->__count++) * self->__type_size,
+  memcpy(self->__array + self->__count++ * self->__type_size,
          item,
          self->__type_size);
 }
