@@ -307,25 +307,26 @@ void test10(void) {
 void test11(void) {
   vt_in();
 
-  vector v = vt_new(int, 1, 1000000);
-  for (int i = 0; i < 1000000; ++i) {
-    vt_at(v, i, int) = ((i + 1) * 5 + 17) * 3;
-  }
-  long long tot = 0;
-  for (int i = 0; i < 1000000; ++i) {
-    tot += vt_at(v, i, int);
-  }
-  printf("%lld\n", tot);
-
-  // int a[1000000];
+  // vector v = vt_new(int, 1, 0);
   // for (int i = 0; i < 1000000; ++i) {
-  //   a[i] = ((i + 1) * 5 + 17) * 3;
+  //   vt_push(v, ((i + 1) * 5 + 17) * 3);
   // }
   // long long tot = 0;
-  // for (int i = 1000000; i--; ) {
-  //   tot += a[i];
+  // while (vt_len(v)) {
+  //   tot += vt_back(v, int);
+  //   vt_pop(v);
   // }
   // printf("%lld\n", tot);
+
+  int a[1000000];
+  for (int i = 0; i < 1000000; ++i) {
+    a[i] = ((i + 1) * 5 + 17) * 3;
+  }
+  long long tot = 0;
+  for (int i = 1000000; i--; ) {
+    tot += a[i];
+  }
+  printf("%lld\n", tot);
 
   vt_out();
 }
@@ -399,7 +400,7 @@ int main(void) {
   // test8();
   // test9();
   // test10();
-  // test11();
+  test11();
   // test12();
   // test13();
 

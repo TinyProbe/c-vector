@@ -318,12 +318,12 @@ void test11(void) {
   }
   printf("%lld\n", tot);
 
-  // int a[100000];
-  // for (int i = 0; i < 100000; ++i) {
+  // int a[1000000];
+  // for (int i = 0; i < 1000000; ++i) {
   //   a[i] = ((i + 1) * 5 + 17) * 3;
   // }
   // long long tot = 0;
-  // for (int i = 100000; i--; ) {
+  // for (int i = 1000000; i--; ) {
   //   tot += a[i];
   // }
   // printf("%lld\n", tot);
@@ -361,12 +361,12 @@ int main(void) {
   // test4();
   // test5();
   // test6();
-  test7();
+  // test7();
   // test7_1();
   // test8();
   // test9();
   // test10();
-  // test11();
+  test11();
   // test12();
 
   gettimeofday(&t2, __nullptr);
