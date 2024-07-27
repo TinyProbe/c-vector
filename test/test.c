@@ -350,6 +350,40 @@ void test12(void) {
   vt_out();
 }
 
+void test13(void) {
+  vt_in();
+
+  // vector v = vt_new(int, 1, 0);
+  // for (int i = 0; i < 1000000; ++i) {
+  //   vt_push(v, ((i + 1) * 5 + 13) * 15);
+  // }
+  vector v = vt_new(int, 1, 0);
+  vt_resize(v, 1000000);
+  for (size_t i = 0; i < vt_len(v); ++i) {
+    vt_at(v, i, int) = ((i + 1) * 5 + 13) * 15;
+  }
+
+  long long tot = 0;
+  for (size_t i = 0; i < vt_len(v); ++i) {
+    tot += vt_at(v, i, int);
+  }
+  printf("%lld\n", tot);
+
+  // size_t const SIZE = 1000000;
+  // int a[SIZE];
+  // for (int i = 0; i < (int)SIZE; ++i) {
+  //   a[i] = ((i + 1) * 5 + 13) * 15;
+  // }
+
+  // long long tot = 0;
+  // for (int i = 0; i < (int)SIZE; ++i) {
+  //   tot += a[i];
+  // }
+  // printf("%lld\n", tot);
+
+  vt_out();
+}
+
 int main(void) {
   struct timeval t1, t2;
   gettimeofday(&t1, __nullptr);
@@ -367,6 +401,7 @@ int main(void) {
   // test10();
   // test11();
   // test12();
+  // test13();
 
   gettimeofday(&t2, __nullptr);
   t2.tv_sec -= t1.tv_sec;

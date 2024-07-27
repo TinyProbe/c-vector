@@ -85,15 +85,14 @@ static void   __vt_memswap(void *a, void *b, size_t size) {                     
   if (size >= (1ull << 0)) __vt_memswap_1(&a, &b, &size);
 }
 
-static size_t __vt_maximum_bit(size_t idx) {                                    // finish
-  size_t arrays_idx = 0;
-  ++idx;
-  if (idx >> (arrays_idx + (1ull << 4))) arrays_idx += (1ull << 4);
-  if (idx >> (arrays_idx + (1ull << 3))) arrays_idx += (1ull << 3);
-  if (idx >> (arrays_idx + (1ull << 2))) arrays_idx += (1ull << 2);
-  if (idx >> (arrays_idx + (1ull << 1))) arrays_idx += (1ull << 1);
-  if (idx >> (arrays_idx + (1ull << 0))) arrays_idx += (1ull << 0);
-  return arrays_idx;
+static size_t __vt_maximum_bit(size_t n) {                                      // finish
+  size_t maximum_bit = 0;
+  if (n >> (maximum_bit + (1ull << 4))) maximum_bit += (1ull << 4);
+  if (n >> (maximum_bit + (1ull << 3))) maximum_bit += (1ull << 3);
+  if (n >> (maximum_bit + (1ull << 2))) maximum_bit += (1ull << 2);
+  if (n >> (maximum_bit + (1ull << 1))) maximum_bit += (1ull << 1);
+  if (n >> (maximum_bit + (1ull << 0))) maximum_bit += (1ull << 0);
+  return maximum_bit;
 }
 
 static void   __vt_post_incre(vector self, size_t count) {                      // finish
