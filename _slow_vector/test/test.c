@@ -179,13 +179,13 @@ void test7(void) {
 
   vector v = vt_new(int, 1, 1000000);
 
-  // Iterator (time take x1.*)
+  // Iterator (time take x2.*)
   // long long tot = 0;
-  // for (vt_itr i = vt_begin(v); i.idx < vt_len(v); vt_next(i)) {
+  // for (vt_itr i = vt_begin(v); i.idx < vt_size(v); vt_next(i)) {
   //   tot += vt_ref(i, int) = ((i.idx + 1) * 5 + 10) * 5 % 10000;
   // }
 
-  // Random access (same as array)
+  // Random access (time take x3.*)
   long long tot = 0;
   for (size_t i = 0; i < vt_size(v); ++i) {
     tot += vt_at(v, i, int) = ((i + 1) * 5 + 10) * 5 % 10000;
@@ -307,22 +307,23 @@ void test10(void) {
 void test11(void) {
   vt_in();
 
-  vector v = vt_new(int, 1, 1000000);
+  vector v = vt_new(int, 1, 0);
   for (int i = 0; i < 1000000; ++i) {
-    vt_at(v, i, int) = ((i + 1) * 5 + 17) * 3;
+    vt_push(v, ((i + 1) * 5 + 17) * 3);
   }
   long long tot = 0;
-  for (int i = 0; i < 1000000; ++i) {
-    tot += vt_at(v, i, int);
+  while (vt_len(v)) {
+    tot += vt_back(v, int);
+    vt_pop(v);
   }
   printf("%lld\n", tot);
 
-  // int a[1000000];
-  // for (int i = 0; i < 1000000; ++i) {
+  // int a[100000];
+  // for (int i = 0; i < 100000; ++i) {
   //   a[i] = ((i + 1) * 5 + 17) * 3;
   // }
   // long long tot = 0;
-  // for (int i = 1000000; i--; ) {
+  // for (int i = 100000; i--; ) {
   //   tot += a[i];
   // }
   // printf("%lld\n", tot);
@@ -360,7 +361,7 @@ int main(void) {
   // test4();
   // test5();
   // test6();
-  // test7();
+  test7();
   // test7_1();
   // test8();
   // test9();
