@@ -213,7 +213,9 @@ void    __vt_clear(vector self) {                                               
       __vt_clear(vt_at(self, i, vector));
     }
   }
-  free(self->__array);
+  if (self->__type_count) {
+    free(self->__array);
+  }
   self->__type_count = 0;
   self->__count = 0;
 }
