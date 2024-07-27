@@ -94,7 +94,7 @@ static size_t __vt_maximum_bit(size_t n) {                                      
   return maximum_bit;
 }
 
-static void   __vt_post_incre(vector self, size_t count) {                      // finish
+static void   __vt_pre_incre(vector self, size_t count) {                      // finish
   size_t alloc_count = 1ull << (__vt_maximum_bit(count) + 2);
   void *new = calloc(alloc_count, self->__type_size);
   assert(new != __nullptr);
@@ -196,7 +196,7 @@ vector  __vt_new(size_t type_size, size_t dimension, ...) {                     
 void    __vt_resize(vector self, size_t count) {                                // finish
   if (self->__count < count) {
     if (self->__count >= self->__type_count) {
-      __vt_post_incre(self, count);
+      __vt_pre_incre(self, count);
     }
     self->__count = count;
   } else if (self->__count > count) {
@@ -220,12 +220,12 @@ void    __vt_clear(vector self) {                                               
 
 void    __vt_add(vector self, void *item) {                                     // finish
   if (self->__count >= self->__type_count) {
-    __vt_post_incre(self, self->__count + 1);
+    __vt_pre_incre(self, self->__count + 1);
   }
   ++self->__count;
-  memcpy(
-      self->__array + (self->__count - 1) * self->__type_size,
-      item, self->__type_size);
+  memcpy(self->__array + (self->__count - 1) * self->__type_size,
+         item,
+         self->__type_size);
 }
 
 void    __vt_push(vector self, ...) {                                           // finish
@@ -242,6 +242,49 @@ void    __vt_pop(vector self) {                                                 
     __vt_clear(vt_back(self, vector));
   }
   if (--self->__count <= self->__type_count >> 2) {
+    __vt_post_decre(self);
+  }
+}
+
+void    __vt_insert(vector self, size_t idx, void *item) {                      // finish
+  assert(idx <= self->__count);
+  if (idx == self->__count) {
+    __vt_add(self, item);
+    return;
+  }
+  if (self->__count >= self->__type_count) {
+    __vt_pre_incre(self, self->__count + 1);
+  }
+  ++self->__count;
+  memmove(self->__array + (idx + 1) * self->__type_size,
+          self->__array + idx * self->__type_size,
+          (self->__count - idx) * self->__type_size);
+  memcpy(self->__array + idx * self->__type_size,
+         item,
+         self->__type_size);
+}
+
+void    __vt_input(vector self, size_t idx, ...) {                              // finish
+  va_list ap;
+  va_start(ap, idx);
+  long long p = va_arg(ap, long long);
+  va_end(ap);
+  __vt_insert(self, idx, &p);
+}
+
+void    __vt_erase(vector self, size_t idx) {                                   // finish
+  assert(idx < self->__count);
+  if (idx == self->__count - 1) {
+    __vt_pop(self);
+    return;
+  }
+  if (self->__dimension > 1) {
+    __vt_clear(vt_at(self, idx, vector));
+  }
+  memmove(self->__array + idx * self->__type_size,
+          self->__array + (idx + 1) * self->__type_size,
+          (--self->__count - idx) * self->__type_size);
+  if (self->__count <= self->__type_count >> 2) {
     __vt_post_decre(self);
   }
 }

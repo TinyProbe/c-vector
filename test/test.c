@@ -33,16 +33,17 @@ void test1(void) {
 void test2(void) {
   vt_in();
 
-  vector v = vt_new(int, 1, 1000);
+  vector v = vt_new(int, 1, 100000);
 
-  for (vt_itr i = vt_begin(v); i.idx < vt_size(v); vt_next(i)) {
-    vt_ref(i, int) = i.idx + 1;
+  for (size_t i = 0; i < vt_len(v); ++i) {
+    vt_at(v, i, int) = i + 1;
   }
 
-  for (vt_itr i = vt_begin(v); i.idx < vt_size(v); vt_next(i)) {
-    printf("%d ", vt_ref(i, int));
+  long long tot = 0;
+  for (size_t i = 0; i < vt_len(v); ++i) {
+    tot += vt_at(v, i, int);
   }
-  printf("\n");
+  printf("%lld\n", tot);
 
   vt_out();
 }
@@ -397,21 +398,42 @@ void test14(void) {
   for (int i = 0; i < 100000; ++i) {
     vt_push(v, ((i + 1) * 5 + 13) * 15);
   }
-  for (int i = 0; i < 50000; ++i) {
-    vt_pop(v);
-  }
-  for (int i = 0; i < 30000; ++i) {
-    vt_push(v, ((i + 1) * 5 + 13) * 15);
-  }
-  for (int i = 0; i < 40000; ++i) {
-    vt_pop(v);
-  }
+  // for (int i = 0; i < 50000; ++i) {
+  //   vt_pop(v);
+  // }
+  // for (int i = 0; i < 30000; ++i) {
+  //   vt_push(v, ((i + 1) * 5 + 13) * 15);
+  // }
+  // for (int i = 0; i < 40000; ++i) {
+  //   vt_pop(v);
+  // }
 
   long long tot = 0;
   for (size_t i = 0; i < vt_len(v); ++i) {
     tot += vt_at(v, i, int);
   }
   printf("%lld\n", tot);
+
+  vt_out();
+}
+
+void test15(void) {
+  vt_in();
+
+  vector v = vt_new(int, 1, 0);
+  for (int i = 0; i < 10; ++i) {
+    vt_input(v, i, i + 1);
+  }
+  vt_erase(v, 2);
+  vt_erase(v, 4);
+
+  // long long tot = 0;
+  for (size_t i = 0; i < vt_len(v); ++i) {
+    printf("%d ", vt_at(v, i, int));
+    // tot += vt_at(v, i, int);
+  }
+  printf("\n");
+  // printf("%lld\n", tot);
 
   vt_out();
 }
@@ -435,6 +457,7 @@ int main(void) {
   // test12();
   // test13();
   // test14();
+  // test15();
 
   gettimeofday(&t2, __nullptr);
   t2.tv_sec -= t1.tv_sec;

@@ -36,6 +36,9 @@
 #define vt_add(vt, item)          (__vt_add(vt, &item))   // variable.
 #define vt_push(vt, item)         (__vt_push(vt, item))   // literal.
 #define vt_pop(vt)                (__vt_pop(vt))
+#define vt_insert(vt, idx, item)  (__vt_insert(vt, idx, &item)) // variable.
+#define vt_input(vt, idx, item)   (__vt_input(vt, idx, item))   // literal.
+#define vt_erase(vt, idx)         (__vt_erase(vt, idx))
 #define vt_at(vt, idx, type)      ((type *)vt->__array)[idx]
 #define vt_front(vt, type)        ((type *)vt->__array)[0]
 #define vt_back(vt, type)         ((type *)vt->__array)[vt->__count-1]
@@ -74,6 +77,9 @@ void    __vt_clear(vector self);
 void    __vt_add(vector self, void *item);
 void    __vt_push(vector self, ...);
 void    __vt_pop(vector self);
+void    __vt_insert(vector self, size_t idx, void *item);
+void    __vt_input(vector self, size_t idx, ...);
+void    __vt_erase(vector self, size_t idx);
 void    __vt_swap(vector *a, vector *b);
 vector  __vt_move(vector *src);
 vector  __vt_clone(vector src);
