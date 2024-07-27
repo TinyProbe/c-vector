@@ -181,16 +181,16 @@ void test7(void) {
   vector v = vt_new(int, 1, 1000000);
 
   // Iterator (time take x1.*)
-  long long tot = 0;
-  for (vt_itr i = vt_begin(v); i.idx < vt_len(v); vt_next(i)) {
-    tot += vt_ref(i, int) = ((i.idx + 1) * 5 + 10) * 5 % 10000;
-  }
+  // long long tot = 0;
+  // for (vt_itr i = vt_begin(v); i.idx < vt_len(v); vt_next(i)) {
+  //   tot += vt_ref(i, int) = ((i.idx + 1) * 5 + 10) * 5 % 10000;
+  // }
 
   // Random access (same as array)
-  // long long tot = 0;
-  // for (size_t i = 0; i < vt_size(v); ++i) {
-  //   tot += vt_at(v, i, int) = ((i + 1) * 5 + 10) * 5 % 10000;
-  // }
+  long long tot = 0;
+  for (size_t i = 0; i < vt_size(v); ++i) {
+    tot += vt_at(v, i, int) = ((i + 1) * 5 + 10) * 5 % 10000;
+  }
 
   printf("%lld\n", tot);
 
@@ -308,26 +308,26 @@ void test10(void) {
 void test11(void) {
   vt_in();
 
-  vector v = vt_new(int, 1, 0);
-  for (int i = 0; i < 1000000; ++i) {
-    vt_push(v, ((i + 1) * 5 + 17) * 3);
-  }
-  long long tot = 0;
-  while (vt_len(v)) {
-    tot += vt_back(v, int);
-    vt_pop(v);
-  }
-  printf("%lld\n", tot);
-
-  // int a[1000000];
+  // vector v = vt_new(int, 1, 0);
   // for (int i = 0; i < 1000000; ++i) {
-  //   a[i] = ((i + 1) * 5 + 17) * 3;
+  //   vt_push(v, ((i + 1) * 5 + 17) * 3);
   // }
   // long long tot = 0;
-  // for (int i = 1000000; i--; ) {
-  //   tot += a[i];
+  // while (vt_len(v)) {
+  //   tot += vt_back(v, int);
+  //   vt_pop(v);
   // }
   // printf("%lld\n", tot);
+
+  int a[1000000];
+  for (int i = 0; i < 1000000; ++i) {
+    a[i] = ((i + 1) * 5 + 17) * 3;
+  }
+  long long tot = 0;
+  for (int i = 1000000; i--; ) {
+    tot += a[i];
+  }
+  printf("%lld\n", tot);
 
   vt_out();
 }
@@ -337,21 +337,21 @@ void test12(void) {
 
   long long tot = 0;
 
-  vector v = vt_new(int, 1, 500000);
-  for (vt_itr i = vt_begin(v); i.idx < vt_len(v); vt_next(i)) {
-    tot += vt_ref(i, int) = ((i.idx + 19) * 71 + 13) * 9;
-  }
+  // vector v = vt_new(int, 1, 500000);
+  // for (vt_itr i = vt_begin(v); i.idx < vt_len(v); vt_next(i)) {
+  //   tot += vt_ref(i, int) = ((i.idx + 19) * 71 + 13) * 9;
+  // }
 
   // vector v = vt_new(int, 1, 500000);
   // for (size_t i = 0; i < vt_len(v); ++i) {
-  //   tot += vt_at(v, i, int) = i;
+  //   tot += vt_at(v, i, int) = ((i + 19) * 71 + 13) * 9;
   // }
 
-  // int a[500000];
-  // for (int i = 0; i < 500000; ++i) {
-  //   tot += a[i] = i;
-  // }
-  // printf("%d\n", a[99993]);
+  int a[500000];
+  for (int i = 0; i < 500000; ++i) {
+    tot += a[i] = ((i + 19) * 71 + 13) * 9;
+  }
+  printf("%d\n", a[99993]);
 
   printf("%lld\n", tot);
 
@@ -361,32 +361,32 @@ void test12(void) {
 void test13(void) {
   vt_in();
 
-  // vector v = vt_new(int, 1, 0);
-  // for (int i = 0; i < 1000000; ++i) {
-  //   vt_push(v, ((i + 1) * 5 + 13) * 15);
-  // }
+  vector v = vt_new(int, 1, 0);
+  for (int i = 0; i < 1000000; ++i) {
+    vt_push(v, ((i + 1) * 5 + 13) * 15);
+  }
   // vector v = vt_new(int, 1, 1000000);
   // for (size_t i = 0; i < vt_len(v); ++i) {
   //   vt_at(v, i, int) = ((i + 1) * 5 + 13) * 15;
   // }
 
-  // long long tot = 0;
-  // for (size_t i = 0; i < vt_len(v); ++i) {
-  //   tot += vt_at(v, i, int);
-  // }
-  // printf("%lld\n", tot);
-
-  size_t const SIZE = 1000000;
-  int a[SIZE];
-  for (int i = 0; i < (int)SIZE; ++i) {
-    a[i] = ((i + 1) * 5 + 13) * 15;
-  }
-
   long long tot = 0;
-  for (int i = 0; i < (int)SIZE; ++i) {
-    tot += a[i];
+  for (size_t i = 0; i < vt_len(v); ++i) {
+    tot += vt_at(v, i, int);
   }
   printf("%lld\n", tot);
+
+  // size_t const SIZE = 1000000;
+  // int a[SIZE];
+  // for (int i = 0; i < (int)SIZE; ++i) {
+  //   a[i] = ((i + 1) * 5 + 13) * 15;
+  // }
+
+  // long long tot = 0;
+  // for (int i = 0; i < (int)SIZE; ++i) {
+  //   tot += a[i];
+  // }
+  // printf("%lld\n", tot);
 
   vt_out();
 }
@@ -398,15 +398,15 @@ void test14(void) {
   for (int i = 0; i < 100000; ++i) {
     vt_push(v, ((i + 1) * 5 + 13) * 15);
   }
-  // for (int i = 0; i < 50000; ++i) {
-  //   vt_pop(v);
-  // }
-  // for (int i = 0; i < 30000; ++i) {
-  //   vt_push(v, ((i + 1) * 5 + 13) * 15);
-  // }
-  // for (int i = 0; i < 40000; ++i) {
-  //   vt_pop(v);
-  // }
+  for (int i = 0; i < 50000; ++i) {
+    vt_pop(v);
+  }
+  for (int i = 0; i < 30000; ++i) {
+    vt_push(v, ((i + 1) * 5 + 13) * 15);
+  }
+  for (int i = 0; i < 40000; ++i) {
+    vt_pop(v);
+  }
 
   long long tot = 0;
   for (size_t i = 0; i < vt_len(v); ++i) {
@@ -421,19 +421,20 @@ void test15(void) {
   vt_in();
 
   vector v = vt_new(int, 1, 0);
-  for (int i = 0; i < 10; ++i) {
+  for (int i = 0; i < 100000; ++i) {
     vt_input(v, i, i + 1);
   }
-  vt_erase(v, 2);
-  vt_erase(v, 4);
-
-  // long long tot = 0;
-  for (size_t i = 0; i < vt_len(v); ++i) {
-    printf("%d ", vt_at(v, i, int));
-    // tot += vt_at(v, i, int);
+  for (int i = 0; i < 9000; ++i) {
+    vt_erase(v, 90000);
   }
-  printf("\n");
-  // printf("%lld\n", tot);
+
+  long long tot = 0;
+  for (size_t i = 0; i < vt_len(v); ++i) {
+    // printf("%d ", vt_at(v, i, int));
+    tot += vt_at(v, i, int);
+  }
+  // printf("\n");
+  printf("%lld\n", tot);
 
   vt_out();
 }
