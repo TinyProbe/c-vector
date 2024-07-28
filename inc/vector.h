@@ -42,14 +42,14 @@
 #define vt_at(vt, idx, type)      ((type *)vt->__array)[idx]
 #define vt_front(vt, type)        ((type *)vt->__array)[0]
 #define vt_back(vt, type)         ((type *)vt->__array)[vt->__count-1]
-#define vt_swap(dst, src)         (__vt_swap(&dst, &src))
+#define vt_swap(l, r)             (__vt_swap(&l, &r))
 #define vt_move(src)              (__vt_move(&src))
 #define vt_clone(src)             (__vt_clone(src))
 #define vt_reverse(vt)            (__vt_reverse(vt))
 #define vt_itr(vt, idx)           (__vt_make_itr(vt, idx))
 #define vt_begin(vt)              (__vt_make_itr(vt, 0))
 #define vt_end(vt)                (__vt_make_itr(vt, vt->__count-1))
-#define vt_next(itr)              (assert(++itr.idx <= itr.__self->__count))
+#define vt_next(itr)              (assert(itr.idx++ < itr.__self->__count))
 #define vt_prev(itr)              (assert(itr.idx-- > 0))
 #define vt_ref(itr, type)         ((type *)itr.__self->__array)[itr.idx]
 
@@ -80,7 +80,7 @@ void    __vt_pop(vector self);
 void    __vt_insert(vector self, size_t idx, void *item);
 void    __vt_input(vector self, size_t idx, ...);
 void    __vt_erase(vector self, size_t idx);
-void    __vt_swap(vector *a, vector *b);
+void    __vt_swap(vector *l, vector *r);
 vector  __vt_move(vector *src);
 vector  __vt_clone(vector src);
 void    __vt_reverse(vector self);

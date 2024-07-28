@@ -94,7 +94,7 @@ static size_t __vt_maximum_bit(size_t n) {                                      
   return maximum_bit;
 }
 
-static void   __vt_pre_incre(vector self, size_t count) {                      // finish
+static void   __vt_pre_incre(vector self, size_t count) {                       // finish
   size_t alloc_count = 1ull << (__vt_maximum_bit(count) + 2);
   void *new = calloc(alloc_count, self->__type_size);
   assert(new != __nullptr);
@@ -107,7 +107,7 @@ static void   __vt_pre_incre(vector self, size_t count) {                      /
 }
 
 static void   __vt_post_decre(vector self) {                                    // finish
-  size_t alloc_count = self->__type_count >> 2;
+  size_t alloc_count = 1ull << (__vt_maximum_bit(self->__count) + 1);
   if (alloc_count) {
     void *new = calloc(alloc_count, self->__type_size);
     assert(new != __nullptr);
@@ -195,7 +195,7 @@ vector  __vt_new(size_t type_size, size_t dimension, ...) {                     
 
 void    __vt_resize(vector self, size_t count) {                                // finish
   if (self->__count < count) {
-    if (self->__count >= self->__type_count) {
+    if (count >= self->__type_count) {
       __vt_pre_incre(self, count);
     }
     self->__count = count;
@@ -221,7 +221,7 @@ void    __vt_clear(vector self) {                                               
 }
 
 void    __vt_add(vector self, void *item) {                                     // finish
-  if (self->__count >= self->__type_count) {
+  if (self->__count + 1 > self->__type_count) {
     __vt_pre_incre(self, self->__count + 1);
   }
   memcpy(self->__array + self->__count++ * self->__type_size,
@@ -289,8 +289,8 @@ void    __vt_erase(vector self, size_t idx) {                                   
   }
 }
 
-void    __vt_swap(vector *a, vector *b) {                                       // finish
-  vector c = *a; *a = *b; *b = c;
+void    __vt_swap(vector *l, vector *r) {                                       // finish
+  vector vt = *l; *l = *r; *r = vt;
 }
 
 vector  __vt_move(vector *src) {                                                // finish
@@ -325,6 +325,7 @@ void    __vt_reverse(vector self) {                                             
 }
 
 vt_itr  __vt_make_itr(vector self, size_t idx) {                                // finish
+  assert(idx < self->__count);
   vt_itr itr = { self, idx };
   return itr;
 }

@@ -439,6 +439,24 @@ void test15(void) {
   vt_out();
 }
 
+void test16(void) {
+  vt_in();
+
+  vector v = vt_new(int, 1, 1);
+  printf("%ld\n", vt_type_count(v));
+
+  vt_resize(v, 100);
+  printf("%ld\n", vt_type_count(v));
+
+  vt_resize(v, 2000);
+  printf("%ld\n", vt_type_count(v));
+
+  vt_resize(v, 100);
+  printf("%ld\n", vt_type_count(v));
+
+  vt_out();
+}
+
 int main(void) {
   struct timeval t1, t2;
   gettimeofday(&t1, __nullptr);
@@ -459,6 +477,7 @@ int main(void) {
   // test13();
   // test14();
   // test15();
+  test16();
 
   gettimeofday(&t2, __nullptr);
   t2.tv_sec -= t1.tv_sec;
