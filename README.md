@@ -1,4 +1,4 @@
-# 🚀 c-vector: C 언어용 vector 라이브러리
+# 🚀 C-Vector
 
 <p align="center">
 C 언어에서 동적 배열(Vector) 기능을 제공하는 경량 라이브러리입니다.
