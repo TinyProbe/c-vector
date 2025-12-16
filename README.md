@@ -297,3 +297,7 @@ type    vt_ref(iterator, type)
 ## 🔗 References
 
 - vector.h 파일 내에 모든 함수/매크로에 대한 상세 문서가 포함되어 있습니다.
+
+## 📄 License
+
+이 프로젝트는 MIT 라이선스를 따릅니다.
