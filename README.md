@@ -1,12 +1,75 @@
-# c-vector.
-A vector in c.
+# 🚀 c-vector: C 언어용 vector 라이브러리
 
-### docs.
+<p align="center">
+C 언어에서 동적 배열(Vector) 기능을 제공하는 경량 라이브러리입니다.
+멀티 스레딩 지원, 자동 메모리 관리, 다차원 벡터 생성 등 다양한 기능을 제공합니다.
+</p>
+
+## ✨ Features
+
+- 다차원 벡터 지원: vt_new(type, dimension, ...) 매크로를 사용하여 다차원 동적 배열을 쉽게 생성할 수 있습니다.
+- 자동 메모리 관리: 싱글 스레드 환경에서 vt_in() / vt_out() 또는 프로그램 종료 시 자동으로 모든 벡터 메모리를 해제합니다.
+- STL 유사 함수: C++의 std::vector와 유사한 push, pop, insert, at, iterator 등의 매크로 함수를 제공합니다.
+- 멀티 스레딩 지원: 매크로 정의를 통해 멀티 스레드 환경에서도 안전하게 수동 메모리 관리가 가능합니다.
+
+## 🛠️ Usage
+
+### 1. Single-Threading Mode
+
+별도의 매크로 정의 없이 기본적으로 싱글 스레드 모드로 동작하며, 스코프 기반의
+자동 메모리 해제 기능을 사용할 수 있습니다.
+
 ```c
-//
-//  Macro function list.
-// 
+#include "vector.h"
 
+int main(void) {
+    // 해당 스코프에서 생성된 모든 벡터의 자동 해제를 시작합니다.
+    vt_in();
+
+    // 정수형 벡터 생성 및 값 추가
+    vector v_int = vt_new(int, 1, 0);
+    vt_push(v_int, 10);
+    vt_add(v_int, (int)20);
+
+    // 3차원 long형 벡터 생성 (10 * 20 * 30)
+    vector v_long = vt_new(long, 3, 10, 20, 30);
+
+    // 첫 번째 원소 접근
+    printf("First element: %d\n", vt_front(v_int, int));
+
+    // 이 지점에서 vt_in() 이후 생성된 모든 벡터 메모리가 자동으로 해제됩니다.
+    vt_out();
+    return 0;
+}
+```
+### 2. Multi-Threading Mode
+
+멀티 스레딩 환경에서 사용하려면 헤더 파일 포함 전에 _VECTOR_MULTITHREAD_
+매크로를 정의해야 합니다. 이 모드에서는 자동 해제(vt_in/vt_out)가 비활성화되며,
+vt_delete를 사용하여 수동으로 메모리를 해제해야 합니다.
+
+```c
+#define _VECTOR_MULTITHREAD_ // 반드시 정의
+#include "vector.h"
+
+int main(void) {
+    // vt_new 함수는 여전히 사용 가능합니다.
+    vector v = vt_new(double, 2, 5, 5);
+
+    // 멀티스레드 모드에서는 반드시 수동으로 메모리 해제
+    vt_delete(v);
+
+    // 다차원 벡터의 경우 내부의 모든 벡터도 재귀적으로 해제됩니다.
+    // vector multi = vt_new(vector, 1, 10);
+    // vt_delete(multi);
+
+    return 0;
+}
+```
+
+## 📚 Macro Functions List
+
+```c
 void    vt_in()
     // The 'vt_in' function is called at the beginning of the scope of the
     // function where the vector will be created. Then, when 'vt_out' is
@@ -20,7 +83,7 @@ void    vt_out()
     // and 'vt_out', all vectors will be automatically cleared before
     // the program terminates. This automatic clearing feature is safe
     // to use only in single-threaded mode. In multithreading, you should
-    // declare the __VECTOR_MULTITHREAD macro and use manual clearing.)
+    // declare the _VECTOR_MULTITHREAD_ macro and use manual clearing.)
 
 void    vt_delete(vector)
     // The 'vt_delete' function is a vector manual deletion function that
@@ -220,3 +283,17 @@ type    vt_ref(iterator, type)
     // type: The type of element to dereference.
 
 ```
+
+## ⚙️ Configuration
+
+- 헤더 파일에서 다음 상수를 수정하여 벡터의 최대 크기 등을 조정할 수 있습니다.
+
+```c
+#define MAX_VECTOR_COUNT        (1ull << 20) // 최대 생성 가능한 벡터 인스턴스 수
+#define MAX_STACK_HEIGHT        (1ull << 20) // 내부 스택의 최대 높이 (vt_in/vt_out 관련)
+#define MAX_VECTOR_DIMENSION    (1ull << 5)  // 벡터가 가질 수 있는 최대 차원
+```
+
+## 🔗 References
+
+- vector.h 파일 내에 모든 함수/매크로에 대한 상세 문서가 포함되어 있습니다.

@@ -1,23 +1,23 @@
-#ifndef __VECTOR_VECTOR_H
-#define __VECTOR_VECTOR_H
+#ifndef _VECTOR_VECTOR_H_
+#define _VECTOR_VECTOR_H_
 
 #include <stddef.h>
 #include <assert.h>
 
-#define __MAX_VECTORS_COUNT     (1ull << 20)
-#define __MAX_STACK_HEIGHT      (1ull << 20)
-#define __MAX_VECTOR_DIMENSION  (1ull << 5)
+#define MAX_VECTOR_COUNT        (1ull << 20)
+#define MAX_STACK_HEIGHT        (1ull << 20)
+#define MAX_VECTOR_DIMENSION    (1ull << 5)
 
-#define __nullptr     (void *)0
-#define __true        1
-#define __false       0
+#define _nullptr    (void *)0
+#define _true       1
+#define _false      0
 
 //
 //  When using multithreading with vectors.
-//  __VECTOR_MULTITHREAD must be defined.
+//  _VECTOR_MULTITHREAD_ must be defined.
 //
-// #define __VECTOR_MULTITHREAD
-#ifndef __VECTOR_MULTITHREAD
+// #define _VECTOR_MULTITHREAD_
+#ifndef _VECTOR_MULTITHREAD_
 # define vt_in                    __vt_stack_in   // single-threading.
 # define vt_out                   __vt_stack_out  // single-threading.
 #else
@@ -53,20 +53,22 @@
 #define vt_prev(itr)              (assert(itr.idx-- > 0))
 #define vt_ref(itr, type)         ((type *)itr.__self->__array)[itr.idx]
 
-typedef struct {
-  void   *__array;
-  size_t  __type_size;
-  size_t  __type_count;
-  size_t  __count;
-  size_t  __dimension;
-} *vector, __vector;
+typedef struct
+{
+    void   *__array;
+    size_t  __type_size;
+    size_t  __type_count;
+    size_t  __count;
+    size_t  __dimension;
+}   *vector, __vector;
 
-typedef struct {
-  vector  __self;
-  size_t  idx;
-} vt_itr;
+typedef struct
+{
+    vector  __self;
+    size_t  idx;
+}   vt_itr;
 
-#ifndef __VECTOR_MULTITHREAD
+#ifndef _VECTOR_MULTITHREAD_
 void    __vt_stack_in(void);
 void    __vt_stack_out(void);
 #endif
@@ -86,4 +88,4 @@ vector  __vt_clone(vector src);
 void    __vt_reverse(vector self);
 vt_itr  __vt_make_itr(vector self, size_t idx);
 
-#endif // __VECTOR_VECTOR_H
+#endif // _VECTOR_VECTOR_H_

@@ -136,11 +136,11 @@ void test5(void) {
     // }
 
     struct timeval t1, t2;
-    gettimeofday(&t1, __nullptr);
+    gettimeofday(&t1, _nullptr);
 
     vt_reverse(v);
 
-    gettimeofday(&t2, __nullptr);
+    gettimeofday(&t2, _nullptr);
     t2.tv_sec -= t1.tv_sec;
     t2.tv_usec -= t1.tv_usec;
     printf("%lds %ldus\n", t2.tv_sec, t2.tv_usec);
@@ -284,11 +284,11 @@ void test10(void) {
     }
 
     struct timeval t1, t2;
-    gettimeofday(&t1, __nullptr);
+    gettimeofday(&t1, _nullptr);
 
     vector v2 = vt_clone(v);
 
-    gettimeofday(&t2, __nullptr);
+    gettimeofday(&t2, _nullptr);
     t2.tv_sec -= t1.tv_sec;
     t2.tv_usec -= t1.tv_usec;
     printf("%lds %ldus\n", t2.tv_sec, t2.tv_usec);
@@ -308,26 +308,26 @@ void test10(void) {
 void test11(void) {
     vt_in();
 
-    // vector v = vt_new(int, 1, 0);
-    // for (int i = 0; i < 1000000; ++i) {
-    //   vt_push(v, ((i + 1) * 5 + 17) * 3);
-    // }
-    // long long tot = 0;
-    // while (vt_len(v)) {
-    //   tot += vt_back(v, int);
-    //   vt_pop(v);
-    // }
-    // printf("%lld\n", tot);
-
-    int a[1000000];
+    vector v = vt_new(int, 1, 0);
     for (int i = 0; i < 1000000; ++i) {
-        a[i] = ((i + 1) * 5 + 17) * 3;
+      vt_push(v, ((i + 1) * 5 + 17) * 3);
     }
     long long tot = 0;
-    for (int i = 1000000; i--; ) {
-        tot += a[i];
+    while (vt_len(v)) {
+      tot += vt_back(v, int);
+      vt_pop(v);
     }
     printf("%lld\n", tot);
+
+    // int a[1000000];
+    // for (int i = 0; i < 1000000; ++i) {
+    //     a[i] = ((i + 1) * 5 + 17) * 3;
+    // }
+    // long long tot = 0;
+    // for (int i = 1000000; i--; ) {
+    //     tot += a[i];
+    // }
+    // printf("%lld\n", tot);
 
     vt_out();
 }
@@ -458,7 +458,7 @@ void test16(void) {
 
 int main(void) {
     struct timeval t1, t2;
-    gettimeofday(&t1, __nullptr);
+    gettimeofday(&t1, _nullptr);
 
     // test1();
     // test2();
@@ -478,7 +478,7 @@ int main(void) {
     // test15();
     // test16();
 
-    gettimeofday(&t2, __nullptr);
+    gettimeofday(&t2, _nullptr);
     t2.tv_sec -= t1.tv_sec;
     t2.tv_usec -= t1.tv_usec;
     printf("%lus %luus\n", t2.tv_sec, t2.tv_usec);
